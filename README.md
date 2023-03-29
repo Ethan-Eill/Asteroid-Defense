@@ -1,2 +1,1 @@
-# Asteroid-Defense
-CPSC 4160 Final Project
+Pygame version 2.1.2
