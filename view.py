@@ -1,33 +1,34 @@
 import pygame
+import controller
 from button import Button
 
-#initial setup for game window and display
-def init():
-    #initiate pygame
-    pygame.init()
+#class for the main menu view
+class main_menu_view:
+    #initial setup for game window and display
+    def init():
+        #initiate pygame
+        pygame.init()
 
-    #define global variables
-    global SCREEN_WIDTH, SCREEN_HEIGHT
-    global SCREEN
-    global BACKGROUND_COLOR
-    global ARCADE_FONT
+        #define global variables
+        global SCREEN_WIDTH, SCREEN_HEIGHT
+        global SCREEN
+        global BACKGROUND_COLOR
+        global ARCADE_FONT
+        global TITLE_FONT, BUTTON_FONT
 
-    #create display
-    SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
-    SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
-    pygame.display.set_caption("Asteroid Defense")
-    BACKGROUND_COLOR = (31, 16, 43)
-    ARCADE_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 25)
+        #create display
+        SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
+        SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
+        pygame.display.set_caption("Asteroid Defense")
+        BACKGROUND_COLOR = (31, 16, 43)
+        ARCADE_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 25)
+        #using font in the fonts folder
+        TITLE_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 70)
+        BUTTON_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 50)
 
 
-#menu screen
-def main_menu():
-    #using font in the fonts folder
-    TITLE_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 70)
-    BUTTON_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 50)
-
-    #game loop while in the menu screen
-    while True:
+    #menu screen
+    def main_menu():
         #display background color
         SCREEN.fill(BACKGROUND_COLOR)
 
@@ -58,21 +59,26 @@ def main_menu():
         for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
-        
-        #main menu game loop
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
-                sys.exit()
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     #play the game
-                    print("Play")
+                    controller.game_state = 'play'
                 if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     #go to options screen
-                    print("Options")
+                    controller.game_state = 'options'
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
-                    sys.exit()
+                    quit()
+                #if player quits then exit game
+                if(event.type == pygame.QUIT):
+                    pygame.quit()
+                    quit()
 
-        pygame.display.update()
+#class game:
+    #initialization of 
+    #def init():
+
