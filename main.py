@@ -1,11 +1,11 @@
 import model
 import controller
-import view
+from view import main_menu_view
 
 def main():
     controller.init()
-    #controller.game_loop()
-    view.main_menu()
+    controller.game_loop()
+    #main_menu_view.main_menu()
     print("Now playing ASTEROID DEFENSE")
 
 if __name__ == "__main__":
