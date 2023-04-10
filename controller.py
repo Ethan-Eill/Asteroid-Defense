@@ -1,12 +1,11 @@
 import pygame
-import model
-from view import main_menu_view
+import view
 
 #initiate game
 def init():
     global game_state
     game_state = 'main_menu'
-    main_menu_view.init()
+    view.init()
 
 #main game loop that controls all the input whilst playing the game
 def game_loop():
@@ -15,9 +14,9 @@ def game_loop():
     while True:
         #if the user is in the main menu
         if game_state == 'main_menu':
-            main_menu_view.main_menu()
+            view.main_menu()
         elif game_state == 'play':
-            print("in play game_state")
+            view.start_game()
         elif game_state == 'options':
             print("in options game_state")
         pygame.display.update()
