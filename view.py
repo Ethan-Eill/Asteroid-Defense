@@ -1,7 +1,8 @@
 import pygame
 import controller
+import random
 from button import Button
-from model import Space_Ship
+from model import Space_Ship, Asteroid
 
 
 #initial setup for game window and display
@@ -103,3 +104,13 @@ def start_game():
         player.update_ship(mouse_x, mouse_y)
         pygame.display.flip()
 
+def spawn_asteroids(self):
+    asteroid = Asteroid()
+    self.asteroids = []
+    for asteroid in self.asteroids:
+        asteroid.update()
+    self.asteroids = [a for a in self.asteroids if a.y < 800]
+    x = random.randint(0, 600)
+    y = -50
+    speed = random.randint(1,5)
+    self.asteroids.append(Asteroid(x, y, speed))
