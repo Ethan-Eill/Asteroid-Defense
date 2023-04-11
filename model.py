@@ -1,6 +1,7 @@
 import pygame
 import math
 import view
+import random
 
 #holds all methods and stats behind the spaceship
 class Space_Ship:
@@ -49,3 +50,17 @@ class Space_Ship:
         rot_image_rect = rot_image.get_rect(center=(round(self.pos.x), round(self.pos.y)))
 
         view.SCREEN.blit(rot_image, rot_image_rect.topleft)
+
+#holds all methods and stats behind the asteroids
+class Asteroid:
+    def _init_(self, x, y, speed):
+        self.img = pygame.image.load('assets/asteroid.png').convert_alpha()
+        self.img = pygame.transform.scale(self.img, (70,70))
+        self.x = x
+        self.y = y
+        self.pos = pygame.math.Vector2(self.x, self.y)
+        self.speed = speed
+
+    def update_asteroid(self):
+        self.y += self.speed
+
