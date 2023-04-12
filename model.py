@@ -52,15 +52,41 @@ class Space_Ship:
         view.SCREEN.blit(rot_image, rot_image_rect.topleft)
 
 #holds all methods and stats behind the asteroids
-class Asteroid:
-    def _init_(self, x, y, speed):
-        self.img = pygame.image.load('assets/asteroid.png').convert_alpha()
-        self.img = pygame.transform.scale(self.img, (70,70))
-        self.x = x
-        self.y = y
-        self.pos = pygame.math.Vector2(self.x, self.y)
-        self.speed = speed
+class Asteroid(object):
+    def _init_(self, rank):
+        # rank the asteroids based on size
+        self.rank = rank
+        if self.rank == 1:
+            self.image = pygame.image.load('assets/asteroid50.png').convert_alpha()
+        elif self.rank == 2:
+            self.image = pygame.image.load('assets/asteroid100.png').convert_alpha()
+        else:
+            self.image = pygame.image.load('assets/asteroid150.png').convert_alpha()
+        self.width = 50 * rank
+        self.height = 50 * rank
+        # get a random point in the screen
+        self.randomPoint = random.choice([random.randrange(0, 1000 - self.width), (random.choice([-1 * self.height - 5, 1000 + 5])),(random.choice[-1 * self.width - 5, 1000 + 5]), (random.randrange(0, 1000 - self.height))])
+        self.x, self.y = self.randomPoint
+        # if statements to make sure asteroid go in correct direction
+        if self.x < 1000//2:
+            self.xdir = 1
+        else:
+            self.xdir = -1
+        if self.y < 1000//2:
+            self.ydir = 1
+        else:
+            self.ydir = -1
+        # get the speed of the asteroid
+        self.xvelocity = self.xdir * random.randrange(1,3)
+        self.yvelocity = self.ydir * random.randrange(1,3)
 
-    def update_asteroid(self):
-        self.y += self.speed
+    def draw(self):
+        asteroids = []
+        count = 0
+        count += 1
+        if count % 50 == 0:
+            ran = random.choice([1, 1, 1, 2, 2, 3])
+            asteroids.append(Asteroid(ran))
+        view.SCREEN.blit(self.image, (self.x, self.y))
+
 
