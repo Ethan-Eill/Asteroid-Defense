@@ -2,7 +2,7 @@ import pygame
 import controller
 import random
 from button import Button
-from model import Space_Ship, Asteroid
+from model import Space_Ship, Asteroid, Bullet
 
 
 #initial setup for game window and display
@@ -94,12 +94,68 @@ def start_game():
     BACKGROUND_COLOR = (31, 16, 43)
 
     player = Space_Ship()
+    playerBullets = []
+    asteroids = []
+    count = 0
+    score = 0
     while True:
+
+        count += 1
+        if count % 50 == 0:
+            ran = random.choice([1, 1, 1, 2, 2, 3])
+            asteroids.append(Asteroid(ran))
+
+        for b in playerBullets:
+            b.move()
+            if b.check_off_screen():
+                playerBullets.pop(playerBullets.index(b))
+
+        for a in asteroids:
+            a.x += a.xvelocity
+            a.y += a.yvelocity
+
+            #bullet collision
+            for b in playerBullets:
+                if (b.x >= a.x and b.x <= a.x + a.width) or b.x + b.w >= a.x and b.x + b.w <= a.x + a.width:
+                    if (b.y >= a.y and b.y <= a.y + a.height) or b.y + b.h >= a.y and b.y + b.h <= a.y + a.height:
+                        if a.rank == 3:
+                            na1 = Asteroid(2)
+                            na2 = Asteroid(2)
+                            na1.x = a.x
+                            na2.x = a.x
+                            na1.y = a.y
+                            na2.y = a.y
+                            asteroids.append(na1)
+                            asteroids.append(na2)
+                        elif a.rank == 2:
+                            na1 = Asteroid(1)
+                            na2 = Asteroid(1)
+                            na1.x = a.x
+                            na2.x = a.x
+                            na1.y = a.y
+                            na2.y = a.y
+                            asteroids.append(na1)
+                            asteroids.append(na2)
+                        asteroids.pop(asteroids.index(a))
+                        playerBullets.pop(playerBullets.index(b))
+                        score += 10
+                        break
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    playerBullets.append(Bullet(player))
 
+        #this line throws error once game is exited
         mouse_x, mouse_y = pygame.mouse.get_pos()
         SCREEN.fill(BACKGROUND_COLOR)
         player.update_ship(mouse_x, mouse_y)
+        scoreText = ARCADE_FONT.render('Score: ' + str(score), 1, (255,255,255))
+        SCREEN.blit(scoreText, (SCREEN_WIDTH- scoreText.get_width() - 25, 25))
+        for b in playerBullets:
+            b.draw()
+        for a in asteroids:
+            a.draw()
         pygame.display.flip()
