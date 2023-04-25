@@ -17,7 +17,6 @@ def game_loop():
             view.main_menu()
         elif game_state == 'play':
             view.start_game()
-            view.spawn_asteroids()
         elif game_state == 'options':
             print("in options game_state")
         pygame.display.update()

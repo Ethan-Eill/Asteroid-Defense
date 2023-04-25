@@ -98,6 +98,7 @@ def start_game():
     asteroids = []
     count = 0
     score = 0
+    lives = 3
     while True:
 
         count += 1
@@ -113,6 +114,14 @@ def start_game():
         for a in asteroids:
             a.x += a.xvelocity
             a.y += a.yvelocity
+
+            #player collision with asteroid
+            #not 100% working
+            if (a.x >= player.pos.x - player.width//2 and a.x <= player.pos.x + player.width//2) or (a.x + a.width <= player.pos.x + player.width//2 and a.x + a.width >= player.pos.x - player.width//2):
+                if(a.y >= player.pos.y - player.height//2 and a.y <= player.pos.y + player.height//2) or (a.y + a.height >= player.pos.y - player.height//2 and a.y + a.height <= player.pos.y + player.height//2):
+                    lives -= 1
+                    asteroids.pop(asteroids.index(a))
+
 
             #bullet collision
             for b in playerBullets:
@@ -152,7 +161,7 @@ def start_game():
         mouse_x, mouse_y = pygame.mouse.get_pos()
         SCREEN.fill(BACKGROUND_COLOR)
         player.update_ship(mouse_x, mouse_y)
-        scoreText = ARCADE_FONT.render('Score: ' + str(score), 1, (255,255,255))
+        scoreText = ARCADE_FONT.render('Lives: ' + str(lives) + '   Score: ' + str(score), 1, (255,255,255))
         SCREEN.blit(scoreText, (SCREEN_WIDTH- scoreText.get_width() - 25, 25))
         for b in playerBullets:
             b.draw()

@@ -11,6 +11,8 @@ class Space_Ship:
         self.pos = pygame.math.Vector2(self.x, self.y)
         self.img = pygame.image.load('assets/Space_Ship_v3.png').convert_alpha()
         self.img = pygame.transform.scale(self.img, (70,70))
+        self.width = self.img.get_width()
+        self.height = self.img.get_height()
         self.speed = 7
         self.heading = 0
         self.dirvec = 0
