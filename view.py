@@ -44,11 +44,11 @@ def main_menu():
 
     #display 3 buttons in the main menu, play, options, and quit
     #these three buttons are created via the button class provided in button.py
-    PLAY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/3), 
+    PLAY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
                         text_input="PLAY", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
                         text_input="OPTIONS", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, 470), 
+    QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.67), 
                         text_input="QUIT", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
 
     SCREEN.blit(title_text_1, title_text_rect_1)
@@ -82,6 +82,59 @@ def main_menu():
 
 def menu_shut_down():
     SCREEN.fill((255,255,255))
+
+#pause functionality while in game
+def pause():
+
+    paused = True
+
+    while paused:
+
+        SCREEN.fill(BACKGROUND_COLOR)
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        #define buttons
+        CONTINUE_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+                        text_input="CONTINUE", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
+                        text_input="OPTIONS", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.67), 
+                        text_input="QUIT", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+
+        pause_text = TITLE_FONT.render("Paused", True, "White")
+        pause_text_rect = pause_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/8.5))
+
+        for button in [CONTINUE_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+            button.changeColor(MENU_MOUSE_POS)
+            button.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    paused = False
+                elif OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    paused = False
+                elif QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    pygame.quit()
+                    quit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    paused == False
+
+        SCREEN.blit(pause_text, pause_text_rect)
+        pygame.display.update()
+    
+
+#check if a new wave should begin
+def check_new_wave(wave_number ,score):
+    target_time = pygame.time.get_ticks() + 3000
+    while pygame.time.get_ticks() < target_time:
+        waveText = ARCADE_FONT.render('WAVE ' + str(wave_number), 1, (255,255,255))
+        SCREEN.blit(waveText, ((SCREEN_WIDTH- waveText.get_width())/2, SCREEN_HEIGHT/2))
 
 
 #function for game loop of the main game
@@ -156,6 +209,9 @@ def start_game():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     playerBullets.append(Bullet(player))
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    pause()
 
         #this line throws error once game is exited
         mouse_x, mouse_y = pygame.mouse.get_pos()
