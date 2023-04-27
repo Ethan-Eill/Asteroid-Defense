@@ -16,12 +16,13 @@ def init():
     global BACKGROUND_COLOR
     global ARCADE_FONT
     global TITLE_FONT, BUTTON_FONT, OPTIONS_BUTTON_FONT
-    global is_sound_on
+    global is_sound_on, difficulty
 
     #music
     pygame.mixer.init()
-    background_music = pygame.mixer.music.load('assets/Asteroid-Defense-Background.mp3')
-    pygame.mixer.music.play(-1)
+    #background_music = pygame.mixer.music.load('assets/Asteroid-Defense-Background.mp3')
+    #pygame.mixer.music.play(-1)
+    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
 
     #create display
     SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
@@ -35,6 +36,7 @@ def init():
     OPTIONS_BUTTON_FONT = pygame.font.Font("assets/ARCADE_N.TTF", 30)
     #options
     is_sound_on = True
+    difficulty = 'easy'
 
 
 #menu screen
@@ -55,7 +57,9 @@ def main_menu():
     #these three buttons are created via the button class provided in button.py
     PLAY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
                         text_input="PLAY", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
+    DIFFICULTY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+                        text_input="DIFFICULTY", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
                         text_input="OPTIONS", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
     QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.67), 
                         text_input="QUIT", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
@@ -66,7 +70,7 @@ def main_menu():
     #cycle through every button and run the two functions
     #check to see if mouse is hovering over the button to change color
     #update it to the screen
-    for button in [PLAY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
+    for button in [PLAY_BUTTON, DIFFICULTY_BUTTON, OPTIONS_BUTTON, QUIT_BUTTON]:
         button.changeColor(MENU_MOUSE_POS)
         button.update(SCREEN)
 
@@ -78,10 +82,13 @@ def main_menu():
                 #play the game
                 menu_shut_down()
                 controller.game_state = 'play'
-            if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
+            elif DIFFICULTY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                #go to options screen
+                controller.game_state = 'difficulty'
+            elif OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
                 #go to options screen
                 controller.game_state = 'options'
-            if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
+            elif QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                 pygame.quit()
                 quit()
             #if player quits then exit game
@@ -89,14 +96,73 @@ def main_menu():
                 pygame.quit()
                 quit()
 
+def difficulty_screen():
+    global difficulty
+
+    SCREEN.fill(BACKGROUND_COLOR)
+
+    MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+    #define buttons
+    if difficulty == 'easy':
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+                    text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+                    text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+                    text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+    elif difficulty == 'medium':
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+                    text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+                    text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+                    text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+    else:
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+                    text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+                    text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+                    text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
+
+    BACK_BUTTON = Button(image=None, pos=(80, 30), 
+                    text_input="BACK", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+
+    difficulty_text = TITLE_FONT.render("Difficulty", True, "White")
+    difficulty_text_rect = difficulty_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/8.5))
+
+    for button in [EASY_BUTTON, MEDIUM_BUTTON, HARD_BUTTON, BACK_BUTTON]:
+        button.changeColor(MENU_MOUSE_POS)
+        button.update(SCREEN)
+
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            pygame.quit()
+            quit()
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            if EASY_BUTTON.checkForInput(MENU_MOUSE_POS):
+                difficulty = 'easy'
+            elif BACK_BUTTON.checkForInput(MENU_MOUSE_POS):
+                controller.game_state = 'main_menu'
+            elif MEDIUM_BUTTON.checkForInput(MENU_MOUSE_POS):
+                difficulty = 'medium'
+            elif HARD_BUTTON.checkForInput(MENU_MOUSE_POS):
+                difficulty = 'hard'
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                controller.game_state = 'main_menu'
+
+    SCREEN.blit(difficulty_text, difficulty_text_rect)
+
 def menu_shut_down():
     SCREEN.fill((255,255,255))
 
 def change_sound(is_sound_on):
     if is_sound_on:
-        pygame.mixer.music.unpause()
+        pygame.mixer.Channel(0).unpause()
     else:
-        pygame.mixer.music.pause()
+        pygame.mixer.Channel(0).pause()
 
 def in_menu_options():
     global is_sound_on
@@ -245,6 +311,7 @@ def check_new_wave(wave_number ,score):
 def start_game():
     pygame.init()
     global SCREEN, SCREEN_HEIGHT, SCREEN_WIDTH
+    global is_sound_on, difficulty
     SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroid Defense")
@@ -257,14 +324,23 @@ def start_game():
     count = 0
     score = 0
     lives = 3
+
+    #determine difficulty
+    if difficulty == 'easy':
+        difficulty_modifier = 50
+    elif difficulty == 'medium':
+        difficulty_modifier = 35
+    else:
+        difficulty_modifier = 20
     while not_gameover:
 
         if lives == 0:
             not_gameover = False
             gameover_screen(score)
 
+        #this influences the number of asteroids spawning
         count += 1
-        if count % 50 == 0:
+        if count % difficulty_modifier == 0:
             ran = random.choice([1, 1, 1, 2, 2, 3])
             asteroids.append(Asteroid(ran))
 
@@ -318,6 +394,9 @@ def start_game():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if event.button == 1:
                     playerBullets.append(Bullet(player))
+                    #play laser-shot.wav
+                    if is_sound_on:
+                        pygame.mixer.Channel(1).play(pygame.mixer.Sound('assets/laser-shot.wav'))
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     pause()
@@ -335,6 +414,7 @@ def start_game():
         pygame.display.flip()
 
 def gameover_screen(score):
+    pygame.mixer.Channel(0).stop()
     in_gameover_screen = True
     while in_gameover_screen:
         SCREEN.fill("Red")
@@ -363,6 +443,7 @@ def gameover_screen(score):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if MENU_BUTTON.checkForInput(MENU_MOUSE_POS):
                     controller.game_state = "main_menu"
+                    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
                     in_gameover_screen = False
                 elif STATS_BUTTON.checkForInput(MENU_MOUSE_POS):
                     controller.game_state = "main_menu"

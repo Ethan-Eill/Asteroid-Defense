@@ -17,6 +17,8 @@ def game_loop():
             view.main_menu()
         elif game_state == 'play':
             view.start_game()
+        elif game_state == 'difficulty':
+            view.difficulty_screen()
         elif game_state == 'options':
             view.in_menu_options()
         pygame.display.update()
