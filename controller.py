@@ -18,5 +18,5 @@ def game_loop():
         elif game_state == 'play':
             view.start_game()
         elif game_state == 'options':
-            print("in options game_state")
+            view.in_menu_options()
         pygame.display.update()
