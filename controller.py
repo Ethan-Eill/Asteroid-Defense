@@ -11,9 +11,11 @@ def init():
 def game_loop():
     #game state is used to track which part of the game to display
     #ie main menu, game, options
+    score = 1
     while True:
         #if the user is in the main menu
         if game_state == 'main_menu':
+            #view.stats_screen(score)
             view.main_menu()
         elif game_state == 'play':
             view.start_game()

@@ -25,7 +25,7 @@ def init():
     pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
 
     #create display
-    SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
+    SCREEN_WIDTH, SCREEN_HEIGHT = 1200, 840
     SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroid Defense")
     BACKGROUND_COLOR = (31, 16, 43)
@@ -48,20 +48,20 @@ def main_menu():
     MENU_MOUSE_POS = pygame.mouse.get_pos()
 
     #display title text and center it
-    title_text_1 = TITLE_FONT.render("ASTEROID", True, "Black")
+    title_text_1 = TITLE_FONT.render("ASTEROID", True, "Yellow")
     title_text_rect_1 = title_text_1.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/8.5))
-    title_text_2 = TITLE_FONT.render("DEFENSE", True, "Black")
-    title_text_rect_2 = title_text_2.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/5.5))
+    title_text_2 = TITLE_FONT.render("DEFENSE", True, "Yellow")
+    title_text_rect_2 = title_text_2.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/5))
 
     #display 3 buttons in the main menu, play, options, and quit
     #these three buttons are created via the button class provided in button.py
-    PLAY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+    PLAY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.3), 
                         text_input="PLAY", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    DIFFICULTY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+    DIFFICULTY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.96), 
                         text_input="DIFFICULTY", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+    OPTIONS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.7), 
                         text_input="OPTIONS", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-    QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.67), 
+    QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.5), 
                         text_input="QUIT", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
 
     SCREEN.blit(title_text_1, title_text_rect_1)
@@ -105,11 +105,11 @@ def difficulty_screen():
 
     #define buttons
     if difficulty == 'easy':
-        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
                     text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
-        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
                     text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.8), 
                     text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
     elif difficulty == 'medium':
         EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
@@ -312,8 +312,6 @@ def start_game():
     pygame.init()
     global SCREEN, SCREEN_HEIGHT, SCREEN_WIDTH
     global is_sound_on, difficulty
-    SCREEN_WIDTH, SCREEN_HEIGHT = 1000, 1000
-    SCREEN = pygame.display.set_mode((SCREEN_WIDTH,SCREEN_HEIGHT))
     pygame.display.set_caption("Asteroid Defense")
     BACKGROUND_COLOR = (31, 16, 43)
 
@@ -336,7 +334,8 @@ def start_game():
 
         if lives == 0:
             not_gameover = False
-            gameover_screen(score)
+            gameover_screen()
+            stats_screen(score)
 
         #this influences the number of asteroids spawning
         count += 1
@@ -413,26 +412,72 @@ def start_game():
             a.draw()
         pygame.display.flip()
 
-def gameover_screen(score):
-    pygame.mixer.Channel(0).stop()
-    in_gameover_screen = True
-    while in_gameover_screen:
+def gameover_screen():
+    global is_sound_on
+    if is_sound_on:
+        pygame.mixer.Channel(0).stop()
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound('assets/game-over.mp3'))
+    target_time = pygame.time.get_ticks() + 3000
+    while pygame.time.get_ticks() < target_time:
         SCREEN.fill("Red")
+
+        gameover_text = TITLE_FONT.render("GAMEOVER", True, "White")
+        gameover_text_rect = gameover_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+
+        SCREEN.blit(gameover_text, gameover_text_rect)
+        pygame.display.update()
+
+
+def stats_screen(score):
+    score_file = open("assets/highscores.txt")
+    easy_scores = score_file.readline()
+    medium_scores = score_file.readline()
+    hard_scores = score_file.readline()
+    in_stats_screen = True
+    while in_stats_screen:
+        SCREEN.fill(BACKGROUND_COLOR)
 
         MENU_MOUSE_POS = pygame.mouse.get_pos()
 
         #define buttons
-        MENU_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
-                        text_input="MENU", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        STATS_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
-                        text_input="STATS", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.67), 
-                        text_input="QUIT", font=BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        MENU_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2.3, SCREEN_HEIGHT/1.1), 
+                        text_input="MENU", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+        QUIT_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/1.8, SCREEN_HEIGHT/1.1), 
+                        text_input="QUIT", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
 
-        gameover_text = TITLE_FONT.render("GAMEOVER", True, "White")
+        gameover_text = TITLE_FONT.render("HIGH SCORES", True, "Yellow")
         gameover_text_rect = gameover_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/8.5))
 
-        for button in [MENU_BUTTON, STATS_BUTTON, QUIT_BUTTON]:
+        easy_text = OPTIONS_BUTTON_FONT.render(easy_scores.split(',')[0], True, "Red")
+        easy_text_rect = easy_text.get_rect(center=(SCREEN_WIDTH/8, SCREEN_HEIGHT/4))
+
+        #ran = random.choice([1, 1, 1, 2, 2, 3])
+
+        #display easy scores
+        width_1 = 70
+        width_2 = 220
+        easy_txt = easy_scores.split(',')
+        display_scores(easy_txt, width_1, width_2)
+
+        medium_text = OPTIONS_BUTTON_FONT.render(medium_scores.split(',')[0], True, "Red")
+        medium_text_rect = medium_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/4))
+
+        #display medium scores
+        width_1 = 520
+        width_2 = 670
+        med_txt = medium_scores.split(',')
+        display_scores(med_txt, width_1, width_2)
+
+        hard_text = OPTIONS_BUTTON_FONT.render(hard_scores.split(',')[0], True, "Red")
+        hard_text_rect = hard_text.get_rect(center=(SCREEN_WIDTH/1.2, SCREEN_HEIGHT/4))
+
+        #display hard scores
+        width_1 = 930
+        width_2 = 1080
+        hard_txt = hard_scores.split(',')
+        display_scores(hard_txt, width_1, width_2)
+
+        for button in [MENU_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
             button.update(SCREEN)
 
@@ -444,10 +489,7 @@ def gameover_screen(score):
                 if MENU_BUTTON.checkForInput(MENU_MOUSE_POS):
                     controller.game_state = "main_menu"
                     pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
-                    in_gameover_screen = False
-                elif STATS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    controller.game_state = "main_menu"
-                    in_gameover_screen = False
+                    in_stats_screen = False
                 elif QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     quit()
@@ -457,4 +499,29 @@ def gameover_screen(score):
                     in_gameover_screen == False
 
         SCREEN.blit(gameover_text, gameover_text_rect)
+        SCREEN.blit(easy_text, easy_text_rect)
+        SCREEN.blit(medium_text, medium_text_rect)
+        SCREEN.blit(hard_text, hard_text_rect)
         pygame.display.update()
+
+def display_scores(dif_txt, width_1, width_2):
+    curr_height = 300
+    i = 0
+    color_list = [(255,0,255),(0,255,255),(0,0,255),(0,255,0),(255,255,255)]
+    c_list_index = 0
+    for txt in dif_txt:
+
+        if i != 0:
+            if i%2 == 0:
+                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index])
+                score_text_rect = score_text.get_rect(center=(width_2, curr_height))
+                curr_height = curr_height + 70
+                c_list_index += 1
+            else:
+                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index])
+                score_text_rect = score_text.get_rect(center=(width_1, curr_height))
+
+
+            SCREEN.blit(score_text, score_text_rect)
+
+        i += 1
