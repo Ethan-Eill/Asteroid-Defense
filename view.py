@@ -112,18 +112,18 @@ def difficulty_screen():
         HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.8), 
                     text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
     elif difficulty == 'medium':
-        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
                     text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
                     text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
-        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.8), 
                     text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
     else:
-        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.5), 
+        EASY_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
                     text_input="EASY", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2.2), 
+        MEDIUM_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2), 
                     text_input="MEDIUM", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
-        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.9), 
+        HARD_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.8), 
                     text_input="HARD", font=OPTIONS_BUTTON_FONT, base_color="Blue", hovering_color="Blue")
 
     BACK_BUTTON = Button(image=None, pos=(80, 30), 
@@ -323,6 +323,15 @@ def start_game():
     score = 0
     lives = 3
 
+    #determine highest scores in difficulty
+    score_file = open("assets/highscores.txt")
+    easy_read = score_file.readline().split(',')
+    medium_read = score_file.readline().split(',')
+    hard_read = score_file.readline().split(',')
+    easy_scores = [int(easy_read[2]),int(easy_read[4]),int(easy_read[6]),int(easy_read[8]),int(easy_read[10])]
+    medium_scores = [int(medium_read[2]),int(medium_read[4]),int(medium_read[6]),int(medium_read[8]),int(medium_read[10])]
+    hard_scores = [int(hard_read[2]),int(hard_read[4]),int(hard_read[6]),int(hard_read[8]),int(hard_read[10])]
+
     #determine difficulty
     if difficulty == 'easy':
         difficulty_modifier = 50
@@ -333,8 +342,28 @@ def start_game():
     while not_gameover:
 
         if lives == 0:
+            new_highscore = False
             not_gameover = False
-            gameover_screen()
+            if difficulty == 'easy':
+                for highscore in easy_scores:
+                    if score > highscore:
+                        enter_new_highscore(score)
+                        new_highscore = True
+                        break
+            elif difficulty == 'medium':
+                for highscore in medium_scores:
+                    if score > highscore:
+                        enter_new_highscore(score)
+                        new_highscore = True
+                        break
+            else:
+                for highscore in hard_scores:
+                    if score > highscore:
+                        enter_new_highscore(score)
+                        new_highscore = True
+                        break
+            if not new_highscore:
+                gameover_screen()
             stats_screen(score)
 
         #this influences the number of asteroids spawning
@@ -504,6 +533,59 @@ def stats_screen(score):
         SCREEN.blit(hard_text, hard_text_rect)
         pygame.display.update()
 
+def enter_new_highscore(score):
+    global is_sound_on
+    if is_sound_on:
+        pygame.mixer.Channel(0).stop()
+        pygame.mixer.Channel(2).play(pygame.mixer.Sound('assets/success.mp3'))
+    entering = True
+    user_input = '___'
+    curr_input_index = 0
+    while entering:
+        SCREEN.fill(BACKGROUND_COLOR)
+
+        MENU_MOUSE_POS = pygame.mouse.get_pos()
+
+        #define buttons
+        CONTINUE_BUTTON = Button(image=None, pos=(SCREEN_WIDTH/2, SCREEN_HEIGHT/1.1), 
+                        text_input="CONTINUE", font=OPTIONS_BUTTON_FONT, base_color="#d7fcd4", hovering_color="White")
+
+        new_highscore_text = TITLE_FONT.render("NEW HIGH SCORE", True, "Yellow")
+        new_highscore_text_rect = new_highscore_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/8.5))
+        highscore_text = BUTTON_FONT.render("YOUR HIGH SCORE:" + str(score), True, "White")
+        highscore_text_rect = highscore_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/5))
+
+        CONTINUE_BUTTON.changeColor(MENU_MOUSE_POS)
+        CONTINUE_BUTTON.update(SCREEN)
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if CONTINUE_BUTTON.checkForInput(MENU_MOUSE_POS):
+                    if len(user_input) == 3 and ('_' not in user_input):
+                        entering = False
+            elif event.type == pygame.KEYDOWN:
+                if (event.key == pygame.K_BACKSPACE) and ('_' not in user_input):
+                    user_input = user_input[0:-1]
+                    user_input += '_'
+                elif (curr_input_index < 3):
+                    new = list(user_input)
+                    new[curr_input_index] = event.unicode
+                    user_input = ''.join(new)
+                    curr_input_index += 1
+
+        user_text = BUTTON_FONT.render(user_input, True, "Green")
+        user_text_rect = user_text.get_rect(center=(SCREEN_WIDTH/2, SCREEN_HEIGHT/2))
+
+        SCREEN.blit(user_text, user_text_rect)
+        SCREEN.blit(new_highscore_text, new_highscore_text_rect)
+        SCREEN.blit(highscore_text, highscore_text_rect)
+        pygame.display.update()
+
+    change_highscores(user_input, score)
+
 def display_scores(dif_txt, width_1, width_2):
     curr_height = 300
     i = 0
@@ -511,17 +593,110 @@ def display_scores(dif_txt, width_1, width_2):
     c_list_index = 0
     for txt in dif_txt:
 
-        if i != 0:
+        if i != 0 and i != 11:
             if i%2 == 0:
-                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index])
+                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index%5])
                 score_text_rect = score_text.get_rect(center=(width_2, curr_height))
                 curr_height = curr_height + 70
                 c_list_index += 1
             else:
-                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index])
+                score_text = OPTIONS_BUTTON_FONT.render(txt, True, color_list[c_list_index%5])
                 score_text_rect = score_text.get_rect(center=(width_1, curr_height))
 
 
             SCREEN.blit(score_text, score_text_rect)
 
         i += 1
+
+def change_highscores(user_input, score):
+    score_file = open("assets/highscores.txt")
+    easy_line = score_file.readline()
+    medium_line = score_file.readline()
+    hard_line = score_file.readline()
+    easy_strings = easy_line.split(',')
+    medium_strings = medium_line.split(',')
+    hard_strings = hard_line.split(',')
+
+    easy_scores = [int(easy_strings[2]),int(easy_strings[4]),int(easy_strings[6]),int(easy_strings[8]),int(easy_strings[10])]
+    medium_scores = [int(medium_strings[2]),int(medium_strings[4]),int(medium_strings[6]),int(medium_strings[8]),int(medium_strings[10])]
+    hard_scores = [int(hard_strings[2]),int(hard_strings[4]),int(hard_strings[6]),int(hard_strings[8]),int(hard_strings[10])]
+
+    easy_names = [easy_strings[1],easy_strings[3],easy_strings[5],easy_strings[7],easy_strings[9]]
+    medium_names = [medium_strings[1],medium_strings[3],medium_strings[5],medium_strings[7],medium_strings[9]]
+    hard_names = [hard_strings[1],hard_strings[3],hard_strings[5],hard_strings[7],hard_strings[9]]
+
+    score_file.close()
+
+    score_index = 0
+    if difficulty == 'easy':
+        for curr_score in easy_scores:
+            if score > curr_score:
+                ele = easy_scores.pop()
+                easy_scores.insert(score_index, score)
+                ele = easy_names.pop()
+                easy_names.insert(score_index, user_input)
+
+                new_line = 'easy,'
+
+                for i in range(5):
+                    new_line += easy_names[i]
+                    new_line += ','
+                    new_line += str(easy_scores[i])
+                    new_line += ','
+                new_line += '\n'
+
+                with open('assets/highscores.txt', 'w') as f:
+                    f.write(new_line)
+                    f.write(medium_line)
+                    f.write(hard_line)
+                break
+
+            score_index += 1
+    elif difficulty == 'medium':
+        for curr_score in medium_scores:
+            if score > curr_score:
+                ele = medium_scores.pop()
+                medium_scores.insert(score_index, score)
+                ele = medium_names.pop()
+                medium_names.insert(score_index, user_input)
+
+                new_line = 'medium,'
+
+                for i in range(5):
+                    new_line += medium_names[i]
+                    new_line += ','
+                    new_line += str(medium_scores[i])
+                    new_line += ','
+                new_line += '\n'
+
+                with open('assets/highscores.txt', 'w') as f:
+                    f.write(easy_line)
+                    f.write(new_line)
+                    f.write(hard_line)
+                break
+
+            score_index += 1
+    else:
+        for curr_score in hard_scores:
+            if score > curr_score:
+                ele = hard_scores.pop()
+                hard_scores.insert(score_index, score)
+                ele = hard_names.pop()
+                hard_names.insert(score_index, user_input)
+
+                new_line = 'hard,'
+
+                for i in range(5):
+                    new_line += hard_names[i]
+                    new_line += ','
+                    new_line += str(hard_scores[i])
+                    new_line += ','
+                new_line += '\n'
+
+                with open('assets/highscores.txt', 'w') as f:
+                    f.write(easy_line)
+                    f.write(medium_line)
+                    f.write(new_line)
+                break
+
+            score_index += 1

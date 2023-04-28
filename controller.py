@@ -17,6 +17,7 @@ def game_loop():
         if game_state == 'main_menu':
             #view.stats_screen(score)
             view.main_menu()
+            #view.enter_new_highscore(score)
         elif game_state == 'play':
             view.start_game()
         elif game_state == 'difficulty':
