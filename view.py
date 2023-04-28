@@ -458,6 +458,7 @@ def gameover_screen():
 
 
 def stats_screen(score):
+    global is_sound_on
     score_file = open("assets/highscores.txt")
     easy_scores = score_file.readline()
     medium_scores = score_file.readline()
@@ -517,7 +518,8 @@ def stats_screen(score):
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if MENU_BUTTON.checkForInput(MENU_MOUSE_POS):
                     controller.game_state = "main_menu"
-                    pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
+                    if is_sound_on:
+                        pygame.mixer.Channel(0).play(pygame.mixer.Sound('assets/Asteroid-Defense-Background.mp3'), -1)
                     in_stats_screen = False
                 elif QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
@@ -567,10 +569,17 @@ def enter_new_highscore(score):
                     if len(user_input) == 3 and ('_' not in user_input):
                         entering = False
             elif event.type == pygame.KEYDOWN:
-                if (event.key == pygame.K_BACKSPACE) and ('_' not in user_input):
-                    user_input = user_input[0:-1]
-                    user_input += '_'
-                elif (curr_input_index < 3):
+                if (event.key == pygame.K_BACKSPACE) and curr_input_index != 0:
+                    user_input = user_input[0:curr_input_index-1]
+                    curr_input_index -= 1
+                    if curr_input_index == 0:
+                        user_input += '___'
+                    elif curr_input_index == 1:
+                        user_input += '__'
+                    elif curr_input_index == 2:
+                        user_input += '_'
+                    print(curr_input_index)
+                elif (curr_input_index < 3) and (event.key != pygame.K_BACKSPACE):
                     new = list(user_input)
                     new[curr_input_index] = event.unicode
                     user_input = ''.join(new)
