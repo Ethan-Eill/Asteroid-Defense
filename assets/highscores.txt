@@ -1,3 +1,3 @@
-easy,ece,940,ece,330,sus,170,te1,140,ECE,100,
-medium,ASS,180,ECE,100,ECE,90,ECE,80,ECE,70,
-hard,ece,540,ece,300,ECE,200,ECE,70,ECE,60,
+easy,ece,940,ece,330,sus,170,te1,140,asd,140,
+medium,www,490,ASS,180,ECE,100,ECE,90,ECE,80,
+hard,ece,540,ece,300,www,240,ECE,200,ECE,70,

@@ -323,6 +323,9 @@ def start_game():
     score = 0
     lives = 3
 
+    #framerate
+    clock = pygame.time.Clock()
+
     #determine highest scores in difficulty
     score_file = open("assets/highscores.txt")
     easy_read = score_file.readline().split(',')
@@ -439,7 +442,10 @@ def start_game():
             b.draw()
         for a in asteroids:
             a.draw()
+
+        clock.tick(90)
         pygame.display.flip()
+        
 
 def gameover_screen():
     global is_sound_on
@@ -578,7 +584,6 @@ def enter_new_highscore(score):
                         user_input += '__'
                     elif curr_input_index == 2:
                         user_input += '_'
-                    print(curr_input_index)
                 elif (curr_input_index < 3) and (event.key != pygame.K_BACKSPACE):
                     new = list(user_input)
                     new[curr_input_index] = event.unicode
