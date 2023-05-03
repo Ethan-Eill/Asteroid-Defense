@@ -127,6 +127,10 @@ The tool we used to facilitate collaboration and code versioning is Git/Github a
 
 
 # GROUP MEMBER ROLES, TASKS, AND PERFORMANCE
+## Division of Labor
+
+For the development of this game, we followed the SCRUM methodology for the workload. This included meetings each week. In these meetings, we discussed what we have finished, what we will be working on, and any blockers or problems that we faced. We both were not responsible for any particular section but rather we split up the workload based on our sprint goals. For example, for one week, we met and one of us was responsible for the spaceship display and movement, and the other was responsible for asteroid creation and movement. This allowed us both to get a solid understanding of the MVC development process as well as a better understanding of how larger projects should be handled in the future.
+
 ## Updated Project Timeline/Outline
 ### Milestone 1: March 30
 -	Task 1: Spaceship
